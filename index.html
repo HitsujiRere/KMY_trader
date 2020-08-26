@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Document</title>
+
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/JNKKKK/MoreToggles.css/output/moretoggles.min.css">
+    </head>
+</head>
+
+<body>
+    <h1>三国志NET KMY 商人用 米金売買予定表</h1>
+
+    <div>
+        <div>
+            <label>金</label>
+            <input type="text" id="have_money">
+        </div>
+        <div>
+            <label>米</label>
+            <input type="text" id="have_rice">
+        </div>
+    </div>
+
+    <div>
+        <label>最初行動</label>
+        <select id="setting_start">
+            <option value="auto">自動</option>
+            <option value="money_to_rice">金 → 米</option>
+            <option value="rice_to_money">米 → 金</option>
+        </select>
+    </div>
+
+    <div>
+        <table id="results" style="border: solid 1px black;">
+            <tr>
+                <th>金</th>
+                <th>米</th>
+                <th>消費時間</th>
+                <th>累計時間</th>
+            </tr>
+        </table>
+    </div>
+
+    <style>
+        table {
+            width: 100%;
+            border-spacing: 0;
+        }
+
+        table th {
+            border-bottom: solid 2px #fb5144;
+            padding: 10px 0;
+        }
+
+        table td {
+            border-bottom: solid 2px #ddd;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
+
+    <script>
+        let start = 0;
+        let money = 0;
+        let rice = 0;
+
+        const addToResults = (array) => {
+            const resultsTable = document.getElementById('results');
+
+            const addTR = document.createElement('tr');
+
+            for (const value of array) {
+                const valueTD = document.createElement('td');
+                valueTD.innerHTML = value;
+                addTR.appendChild(valueTD);
+            }
+
+            resultsTable.appendChild(addTR);
+        };
+
+        const solve = () => {
+            if (money < 10000 && rice < 10000) {
+                return;
+            }
+
+            const resultsTable = document.getElementById('results');
+            while (resultsTable.firstChild) {
+                resultsTable.removeChild(resultsTable.firstChild);
+            }
+            const addTR = document.createElement('tr');
+            for (const value of ['金', '米', '消費時間', '累計時間']) {
+                const valueTD = document.createElement('th');
+                valueTD.innerHTML = value;
+                addTR.appendChild(valueTD);
+            }
+            resultsTable.appendChild(addTR);
+
+            let time = 0;
+            let doNumber = -1;
+            if (start == 0) {
+                doNumber = money >= rice ? 0 : 1;
+            } else {
+                doNumber = index - 1;
+            }
+
+            addToResults([money, rice, 0, 0]);
+
+            while (time <= 300) {
+                let sellTime = 0;
+                // money to rice
+                if (doNumber == 0) {
+                    sellTime = (money - money % 10000) / 10000;
+                    time += sellTime;
+                    money -= sellTime * 10000;
+                    rice += sellTime * 12000;
+                }
+                // rice to money
+                else {
+                    sellTime = (rice - rice % 10000) / 10000;
+                    time += sellTime;
+                    rice -= sellTime * 10000;
+                    money += sellTime * 12000;
+                }
+
+                addToResults([money, rice, sellTime, time]);
+
+                doNumber ^= 1;
+            }
+        };
+
+        const startSetButton = document.getElementById('setting_start');
+        startSetButton.selectedIndex = 0;
+        startSetButton.addEventListener('change', (event) => {
+            const index = startSetButton.selectedIndex;
+            start = index;
+            solve();
+        });
+
+        const moneyForm = document.getElementById('have_money');
+        moneyForm.addEventListener('change', (event) => {
+            money = parseInt(moneyForm.value);
+            solve();
+        });
+
+        const riceForm = document.getElementById('have_rice');
+        riceForm.addEventListener('change', (event) => {
+            rice = parseInt(riceForm.value);
+            solve();
+        });
+    </script>
+</body>
+
+</html>
