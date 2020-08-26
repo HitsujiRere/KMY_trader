@@ -119,24 +119,27 @@
 
             addToResults([money, rice, 0, 0]);
 
+            let solveMoney = money;
+            let solveRice = rice;
+
             while (time <= 300) {
                 let sellTime = 0;
                 // money to rice
                 if (doNumber == 0) {
-                    sellTime = (money - money % buyLimit) / buyLimit;
+                    sellTime = (solveMoney - solveMoney % buyLimit) / buyLimit;
                     time += sellTime;
-                    money -= sellTime * buyLimit;
-                    rice += sellTime * buyLimit * 1.2;
+                    solveMoney -= sellTime * buyLimit;
+                    solveRice += sellTime * buyLimit * 1.2;
                 }
                 // rice to money
                 else {
-                    sellTime = (rice - rice % buyLimit) / buyLimit;
+                    sellTime = (solveRice - solveRice % buyLimit) / buyLimit;
                     time += sellTime;
-                    rice -= sellTime * buyLimit;
-                    money += sellTime * buyLimit * 1.2;
+                    solveRice -= sellTime * buyLimit;
+                    solveMoney += sellTime * buyLimit * 1.2;
                 }
 
-                addToResults([money, rice, sellTime, time]);
+                addToResults([solveMoney, solveRice, sellTime, time]);
 
                 doNumber ^= 1;
             }
