@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>Document</title>
+    <title>三国志NET KMY 米金売買予定表</title>
 
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/JNKKKK/MoreToggles.css/output/moretoggles.min.css">
@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <h1>三国志NET KMY 商人用 米金売買予定表</h1>
+    <h1>三国志NET KMY 米金売買予定表</h1>
 
     <div>
         <div>
@@ -31,6 +31,15 @@
             <option value="auto">自動</option>
             <option value="money_to_rice">金 → 米</option>
             <option value="rice_to_money">米 → 金</option>
+        </select>
+    </div>
+
+    <div>
+        <label>売り上限</label>
+        <select id="setting_buy_limit">
+            <option value="10000">10000</option>
+            <option value="20000">20000</option>
+            <option value="30000">30000</option>
         </select>
     </div>
 
@@ -67,6 +76,7 @@
         let start = 0;
         let money = 0;
         let rice = 0;
+        let buyLimit = 10000;
 
         const addToResults = (array) => {
             const resultsTable = document.getElementById('results');
@@ -83,7 +93,7 @@
         };
 
         const solve = () => {
-            if (money < 10000 && rice < 10000) {
+            if (money < buyLimit && rice < buyLimit) {
                 return;
             }
 
@@ -113,17 +123,17 @@
                 let sellTime = 0;
                 // money to rice
                 if (doNumber == 0) {
-                    sellTime = (money - money % 10000) / 10000;
+                    sellTime = (money - money % buyLimit) / buyLimit;
                     time += sellTime;
-                    money -= sellTime * 10000;
-                    rice += sellTime * 12000;
+                    money -= sellTime * buyLimit;
+                    rice += sellTime * buyLimit * 1.2;
                 }
                 // rice to money
                 else {
-                    sellTime = (rice - rice % 10000) / 10000;
+                    sellTime = (rice - rice % buyLimit) / buyLimit;
                     time += sellTime;
-                    rice -= sellTime * 10000;
-                    money += sellTime * 12000;
+                    rice -= sellTime * buyLimit;
+                    money += sellTime * buyLimit * 1.2;
                 }
 
                 addToResults([money, rice, sellTime, time]);
@@ -132,11 +142,19 @@
             }
         };
 
-        const startSetButton = document.getElementById('setting_start');
-        startSetButton.selectedIndex = 0;
-        startSetButton.addEventListener('change', (event) => {
-            const index = startSetButton.selectedIndex;
+        const startSelect = document.getElementById('setting_start');
+        startSelect.selectedIndex = 0;
+        startSelect.addEventListener('change', (event) => {
+            const index = startSelect.selectedIndex;
             start = index;
+            solve();
+        });
+
+        const buyLimitSelect = document.getElementById('setting_buy_limit');
+        buyLimitSelect.selectedIndex = 0;
+        buyLimitSelect.addEventListener('change', (event) => {
+            const index = buyLimitSelect.selectedIndex;
+            buyLimit = buyLimitSelect.options[index].value;
             solve();
         });
 
